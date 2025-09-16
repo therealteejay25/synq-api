@@ -1,0 +1,25 @@
+import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
+import dotenv from 'dotenv'
+import ConnectDB from './config/db.ts'
+
+dotenv.config();
+
+const PORT = process.env.PORT
+
+const app = express();
+
+app.use(cors());
+app.use(helmet());
+app.use(express.json());
+
+ConnectDB();
+
+app.get('/ping', (req, res) => {
+    res.json({ pong: true });
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on localhost:${PORT}`)
+})
