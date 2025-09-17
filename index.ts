@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
 import ConnectDB from './config/db.ts'
+import authRoutes from './routes/authRoutes.ts'
 
 dotenv.config();
 
@@ -15,6 +16,8 @@ app.use(helmet());
 app.use(express.json());
 
 ConnectDB();
+
+app.use('/auth', authRoutes);
 
 app.get('/ping', (req, res) => {
     res.json({ pong: true });
