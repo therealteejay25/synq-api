@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import dotenv from 'dotenv'
 import ConnectDB from './config/db.ts'
 import authRoutes from './routes/authRoutes.ts'
+import ngrok from '@ngrok/ngrok'
 
 dotenv.config();
 
@@ -26,3 +27,6 @@ app.get('/ping', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on localhost:${PORT}`)
 })
+
+ngrok.connect({ addr: 9000, authtoken_from_env: true })
+	.then(listener => console.log(`Ingress established at: ${listener.url()}`));
