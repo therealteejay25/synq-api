@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import dotenv from 'dotenv'
 import ConnectDB from './config/db.ts'
 import authRoutes from './routes/authRoutes.ts'
+import gitHubRoutes from './routes/gitHubRoutes.ts'
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 ConnectDB();
 
 app.use('/auth', authRoutes);
+app.use('/api/github', gitHubRoutes);
 
 app.get('/ping', (req, res) => {
     res.json({ pong: true });

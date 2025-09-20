@@ -1,14 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-const ACCESS_SECRET = process.env.ACCESS_SECRET!;
+const ACCESS_SECRET = process.env.JWT_SECRET!;
 
 export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
   try {
-    const header = req.headers.authorization;
-    const token = header?.startsWith("Bearer ")
-      ? header.split(" ")[1]
-      : req.cookies?.accessToken;
+    const token = req.cookies.accessToken; // ONLY check cookie
 
     if (!token) return res.status(401).json({ error: "No token provided" });
 
@@ -16,7 +13,7 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
     (req as any).userId = decoded.userId;
 
     next();
-  } catch {
-    return res.status(401).json({ error: "Invalid or expired token" });
+  } catch (error) {
+    return res.status(401).json({ message: "Invalid or expired token", error });
   }
 };
