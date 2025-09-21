@@ -47,7 +47,7 @@ export const requestMagicLink = async (
       await user.save();
     }
 
-    const magicLinkUrl = `${process.env.CLIENT_URL}/auth/verify?token=${rawToken}`;
+    const magicLinkUrl = `https://localhost:3000/auth/verify?token=${rawToken}`;
     console.log("🔗 Generated magic link URL:", magicLinkUrl);
     console.log("📧 Sending magic link to:", user.email);
 
