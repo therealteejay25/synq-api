@@ -5,26 +5,47 @@ import dotenv from 'dotenv'
 import ConnectDB from './config/db.ts'
 import authRoutes from './routes/authRoutes.ts'
 import gitHubRoutes from './routes/gitHubRoutes.ts'
+import cookieParser from 'cookie-parser'
 
 dotenv.config();
 
-const PORT = process.env.PORT
+const PORT = process.env.PORT;
+const CLIENT_URL ="http://localhost:3000"; // frontend url
 
 const app = express();
 
-app.use(cors());
+// --- MIDDLEWARE ---
+app.use(cors({
+  origin: CLIENT_URL,   // only your frontend
+  credentials: true,    // allow cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+}));
 app.use(helmet());
 app.use(express.json());
+app.use(cookieParser());
 
+// --- DATABASE ---
 ConnectDB();
 
+// --- ROUTES ---
 app.use('/auth', authRoutes);
 app.use('/api/github', gitHubRoutes);
 
 app.get('/ping', (req, res) => {
-    res.json({ pong: true });
+  res.json({ pong: true });
 });
 
+// Test route to check authentication
+app.get('/test-auth', (req, res) => {
+  res.json({ 
+    message: "Auth test route",
+    cookies: req.cookies,
+    hasAccessToken: !!req.cookies.accessToken
+  });
+});
+
+// --- SERVER ---
 app.listen(PORT, () => {
-    console.log(`Server running on localhost:${PORT}`)
-})
+  console.log(`Server running on http://localhost:${PORT}`);
+});
