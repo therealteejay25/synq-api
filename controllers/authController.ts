@@ -46,14 +46,11 @@ export const requestMagicLink = async (
       user.magicLinkUsed = false;
       await user.save();
     }
-
-    const magicLinkUrl = `https://localhost:3000/auth/verify?token=${rawToken}`;
-    console.log("🔗 Generated magic link URL:", magicLinkUrl);
     console.log("📧 Sending magic link to:", user.email);
 
-    await sendMagicLink(user.email, magicLinkUrl);
+    await sendMagicLink(user.email, rawToken);
 
-    return res.status(200).json({ message: "Magic link sent!", rawToken, magicLinkUrl });
+    return res.status(200).json({ message: "Magic link sent!", rawToken });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }

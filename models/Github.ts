@@ -5,7 +5,7 @@ export interface IGitHub extends Document {
   orgId?: string;
   accessToken: string;
   refreshToken?: string;
-  expiresAt: Date;
+  expiresAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,7 +16,7 @@ const gitHubSchema = new Schema<IGitHub>(
     orgId: {type: String,  required: false},
     accessToken: { type: String, required: true },
     refreshToken: { type: String, required: false },
-    expiresAt: { type: Date, required: true },
+    expiresAt: { type: Date, required: false },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
