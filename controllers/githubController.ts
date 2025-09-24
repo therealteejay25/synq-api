@@ -38,7 +38,7 @@ export const githubCallback = async (req: Request, res: Response) => {
 
     const expiresAt = new Date(Date.now() + (expires_in ? expires_in * 1000 : 3600 * 1000));
 
-    // Step 2: Check if GitHub integration already exists for this user
+
     let github = await GitHub.findOne({ userId: userId.toString() });
     if (github) {
       github.accessToken = access_token;
@@ -51,14 +51,14 @@ export const githubCallback = async (req: Request, res: Response) => {
     }
     
 
-    // Step 3: Create new GitHub integration
+
     const githubData: any = {
       userId: userId.toString(),
       accessToken: access_token,
       expiresAt,
     };
     
-    // Only add refreshToken if it exists
+ 
     if (refresh_token) {
       githubData.refreshToken = refresh_token;
     }

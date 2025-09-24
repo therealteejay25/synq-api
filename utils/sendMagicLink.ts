@@ -11,11 +11,12 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendMagicLink = async (email: string, token: string) => {
-  const link = `http://localhost:5173/auth/verify?token=${token}`; // frontend link
+  const link = `http://synq-lime.vercel.app/onboard/set-workspace?token=${token}`; 
   await transporter.sendMail({
     from: `"Synq" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: "Your magic login link",
-    html: `<p>Click <a href="${link}">here</a> to log in. This link expires in 15 minutes.</p>`,
+    subject: "Your Magic Login Link",
+    html: `my name is fawas {link} `
+
   });
 };
