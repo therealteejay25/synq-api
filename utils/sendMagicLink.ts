@@ -11,8 +11,9 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendMagicLink = async (email: string, token: string) => {
+  const link = `http://synq-lime.vercel.app/onboard/set-workspace?token=${token}`; 
   // Backwards compatibility: if a full URL is passed in, use it directly; else treat it as a raw token
-  const magicLinkUrl = token.startsWith("http") ? token : `http://localhost:3000/auth/verify-link?token=${token}`;
+  const magicLinkUrl = token.startsWith("http") ? token : `http://`;
 
   const preheader = "Secure one-click sign-in. This link expires in 15 minutes.";
   const brandColor = "#6C5CE7"; // Synq brand accent
