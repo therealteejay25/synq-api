@@ -54,7 +54,7 @@ const userSchema = new Schema<IUser>(
       },
     ],
 
-    ownedTools: [{ type: Schema.Types.ObjectId, ref: "Tool" }],
+    ownedTools: [{ type: Schema.Types.ObjectId }],
 
     settings: {
       theme: { type: String, enum: ["light", "dark", "system"], default: "system" },
