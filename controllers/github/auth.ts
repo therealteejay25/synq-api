@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import axios from "axios";
 import Integration from "../../models/Integration.ts";
 import User from "../../models/User.ts";
-import { remainingIntegrations } from "../../utils/integrationUtils.ts"; // helper we built
+import { remainingIntegrations } from "../../utils/remianingIntegrations.ts"; // helper we built
 
 export const redirectToGitHub = (req: Request, res: Response) => {
   const clientId = process.env.GITHUB_CLIENT_ID!;
@@ -83,7 +83,6 @@ export const githubCallback = async (req: Request, res: Response) => {
       github.expiresAt = expiresAt;
       if (refresh_token) {
         github.refreshToken = refresh_token;
-        github.refreshTokenExpiresAt = refreshTokenExpiresAt;
       }
       github.username = username;
       github.avatar = avatar_url;
