@@ -1,22 +1,21 @@
 import { Request, Response } from "express";
 import axios from "axios";
-import GitHub from "../../models/Github.ts";
+import Integration from "../../models/Integration.ts";
 import User from "../../models/User.ts";
+import { remainingIntegrations } from "../../utils/integrationUtils.ts"; // helper we built
 
 export const redirectToGitHub = (req: Request, res: Response) => {
   const clientId = process.env.GITHUB_CLIENT_ID!;
   const redirectUri = process.env.GITHUB_REDIRECT_URI!;
 
   const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=repo,user,admin:repo_hook,delete_repo`;
-
-
   res.redirect(url);
 };
 
 export const githubCallback = async (req: Request, res: Response) => {
   try {
     const code = req.query.code as string;
-    const userId = (req as any).userId; // from your auth middleware
+    const userId = (req as any).userId; // set by auth middleware
 
     if (!code) {
       return res.status(400).json({ error: "No code provided" });
@@ -45,35 +44,69 @@ export const githubCallback = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "No access token returned" });
     }
 
-    // Decide if it's classic vs expirable
-    const isExpirable = Boolean(refresh_token && expires_in);
+    // Step 2: Fetch GitHub account details
+    const userRes = await axios.get("https://api.github.com/user", {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
 
+    const { id: githubId, login: username, avatar_url } = userRes.data;
+
+    // Step 3: Check plan limit before creating integration
+    const { limit, used } = await remainingIntegrations(userId);
+    if (limit !== null && used >= limit) {
+      return res.status(403).json({
+        error: `Integration limit reached. Your plan allows up to ${limit} integrations.`,
+      });
+    }
+
+    // Step 4: Decide if it's classic vs expirable
+    const isExpirable = Boolean(refresh_token && expires_in);
     let expiresAt: Date | null = null;
     let refreshTokenExpiresAt: Date | null = null;
 
     if (isExpirable) {
       expiresAt = new Date(Date.now() + expires_in * 1000);
-      refreshTokenExpiresAt = new Date(Date.now() + refresh_token_expires_in * 1000);
+      refreshTokenExpiresAt = new Date(
+        Date.now() + refresh_token_expires_in * 1000
+      );
     }
 
-    // Step 2: Upsert GitHub integration
-    let github = await GitHub.findOne({ userId: userId.toString() });
+    // Step 5: Upsert GitHub integration for this account
+    let github = await Integration.findOne({
+      userId: userId.toString(),
+      provider: "github",
+      providerAccountId: githubId.toString(),
+    });
+
     if (github) {
       github.accessToken = access_token;
-      github.expiresAt = expiresAt; 
+      github.expiresAt = expiresAt;
+      if (refresh_token) {
+        github.refreshToken = refresh_token;
+        github.refreshTokenExpiresAt = refreshTokenExpiresAt;
+      }
+      github.username = username;
+      github.avatar = avatar_url;
       await github.save();
     } else {
-      github = await GitHub.create({
+      github = await Integration.create({
+        name: "github",
+        provider: "github",
+        providerAccountId: githubId.toString(),
         userId: userId.toString(),
         accessToken: access_token,
         expiresAt,
-        ...(refresh_token && { 
+        username,
+        avatar: avatar_url,
+        ...(refresh_token && {
           refreshToken: refresh_token,
-          refreshTokenExpiresAt 
+          refreshTokenExpiresAt,
         }),
       });
 
-      await User.findByIdAndUpdate(userId, { $addToSet: { ownedTools: github._id } });
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: { ownedTools: github._id },
+      });
     }
 
     return res.json({
@@ -81,6 +114,7 @@ export const githubCallback = async (req: Request, res: Response) => {
         ? "GitHub integration created (expiring token with refresh)."
         : "GitHub integration created (classic permanent token).",
       toolId: github._id,
+      account: { githubId, username, avatar: avatar_url },
     });
   } catch (err: any) {
     console.error("GitHub callback error:", err.response?.data || err.message);

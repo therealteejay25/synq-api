@@ -1,6 +1,6 @@
 import { Request, response, Response } from "express";
 import axios from "axios";
-import GitHub from "../../models/Github.ts";
+import GitHub from "../../models/Integration.ts";
 import User from "../../models/User.ts";
 
 export const getRepos = async (req: Request, res: Response) => {

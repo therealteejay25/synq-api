@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import axios from "axios";
-import GitHub from "../../models/Github.ts";
+import GitHub from "../../models/Integration.ts";
 
 export const followUser = async (req: Request, res: Response) => {
   try {

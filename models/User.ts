@@ -7,7 +7,7 @@ export interface IUser extends Document {
   magicLinkToken: string | null;
   magicLinkExpires: Date | null;
   magicLinkUsed: boolean;
-  plan: "free" | "pro" | "team";
+  plan: "free" | "pro" | "premium" |  "team";
   planDue: Date;
 
   orgs: {
@@ -39,7 +39,13 @@ const userSchema = new Schema<IUser>(
     magicLinkToken: { type: String, required: false },
     magicLinkExpires: { type: Date, required: false },
     magicLinkUsed: { type: Boolean, required: false },
-    plan: { type: String, required: true, default: "free" },
+    plan: { 
+      type: String, 
+      enum: ["free", "pro", "premium", "team"], 
+      required: true, 
+      default: "free" 
+    },
+    
     planDue: { type: Date, required: false },
 
     orgs: [
