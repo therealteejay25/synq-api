@@ -12,8 +12,8 @@ interface MagicLinkRequest {
 // 🔒 Cookie options (auto toggle for prod)
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
+  secure: process.env.NODE_ENV === "production", // true on HTTPS
+  sameSite: "none" as const, // allow cross-site requests
   path: "/",
 };
 
