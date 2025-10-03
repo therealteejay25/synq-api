@@ -17,7 +17,7 @@ const app = express();
 // --- MIDDLEWARE ---
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://synq.vercel.app",
+  "https://synq-lime.vercel.app",
   "https://miniature-spoon-wr54g96jp4wqf599q.github.dev",
 ];
 
