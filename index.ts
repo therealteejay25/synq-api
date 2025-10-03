@@ -15,9 +15,21 @@ const CLIENT_URL ="http://localhost:3000"; // frontend url
 const app = express();
 
 // --- MIDDLEWARE ---
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://synq.vercel.app",
+  "https://miniature-spoon-wr54g96jp4wqf599q.github.dev",
+];
+
 app.use(cors({
-  origin: CLIENT_URL,   // only your frontend
-  credentials: true,    // allow cookies
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
 }));
