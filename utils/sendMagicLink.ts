@@ -12,7 +12,7 @@ export const sendMagicLink = async (email: string, token: string) => {
     html: `
       <h1>Sign in to Synq</h1>
       <p>Click the link below to sign in. This link expires in 15 minutes.</p>
-      <a href="${link}" style="color: #6B48FF">${link}</a>
+      ${link}
     `,
   });
 };
