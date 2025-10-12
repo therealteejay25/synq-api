@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import ConnectDB from './config/db.ts'
 import authRoutes from './routes/authRoutes.ts'
 import gitHubRoutes from './routes/gitHubRoutes.ts'
+import waitListRoutes from './routes/waitlist.ts'
 import cookieParser from 'cookie-parser'
 
 dotenv.config();
@@ -43,6 +44,7 @@ ConnectDB();
 // --- ROUTES ---
 app.use('/auth', authRoutes);
 app.use('/api/github', gitHubRoutes);
+app.use('/api/waitlist', waitListRoutes);
 
 app.get('/ping', (req, res) => {
   res.json({ pong: true });
