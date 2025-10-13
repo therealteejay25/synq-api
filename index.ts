@@ -19,6 +19,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "https://synq-lime.vercel.app",
+  "https://synq01.vercel.app",
   "https://miniature-spoon-wr54g96jp4wqf599q.github.dev",
 ];
 
